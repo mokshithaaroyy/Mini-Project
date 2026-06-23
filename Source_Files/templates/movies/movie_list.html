@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block title %}Browse Movies - MovieHub{% endblock %}
+{% block content %}
+
+<h1>Browse Movies</h1>
+
+<form action="{% url 'movie_list' %}" method="get" class="filter-bar">
+    <input type="text" name="q" placeholder="Search title or director..." value="{{ query }}">
+
+    <select name="genre">
+        <option value="">All genres</option>
+        {% for genre in genres %}
+            <option value="{{ genre.id }}" {% if selected_genre == genre.id|stringformat:"s" %}selected{% endif %}>{{ genre.name }}</option>
+        {% endfor %}
+    </select>
+
+    <select name="language">
+        <option value="">All languages</option>
+        {% for code, label in languages %}
+            <option value="{{ code }}" {% if selected_language == code %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+    </select>
+
+    <select name="sort">
+        <option value="newest" {% if sort == 'newest' %}selected{% endif %}>Newest first</option>
+        <option value="rating" {% if sort == 'rating' %}selected{% endif %}>Top rated</option>
+        <option value="year" {% if sort == 'year' %}selected{% endif %}>Release year</option>
+        <option value="title" {% if sort == 'title' %}selected{% endif %}>Title A-Z</option>
+    </select>
+
+    <button type="submit">Apply</button>
+    <a href="{% url 'movie_list' %}" class="clear-link">Clear</a>
+</form>
+
+{% if page_obj %}
+    <p class="result-count">{{ page_obj.paginator.count }} movie{{ page_obj.paginator.count|pluralize }} found</p>
+    <div class="movie-grid">
+        {% for movie in page_obj %}
+            {% include 'movies/movie_card.html' %}
+        {% endfor %}
+    </div>
+
+    <div class="pagination">
+        {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}&q={{ query }}&genre={{ selected_genre }}&language={{ selected_language }}&sort={{ sort }}">&laquo; Prev</a>
+        {% endif %}
+        <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}&q={{ query }}&genre={{ selected_genre }}&language={{ selected_language }}&sort={{ sort }}">Next &raquo;</a>
+        {% endif %}
+    </div>
+{% else %}
+    <p class="empty-note">No movies matched your search.</p>
+{% endif %}
+
+{% endblock %}
