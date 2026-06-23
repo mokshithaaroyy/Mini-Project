@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}Recommended For You - MovieHub{% endblock %}
+{% block content %}
+
+<h1>Recommended For You</h1>
+
+{% if not has_ratings %}
+    <p class="empty-note">
+        You haven't rated any movies yet, so these are just our top-rated picks.
+        <a href="{% url 'movie_list' %}">Rate a few movies</a> to get personalized recommendations.
+    </p>
+{% else %}
+    <p class="empty-note">Based on the genres of movies you've rated 4 stars and above.</p>
+{% endif %}
+
+{% if recommended %}
+    <div class="movie-grid">
+        {% for movie in recommended %}
+            {% include 'movies/movie_card.html' %}
+        {% endfor %}
+    </div>
+{% else %}
+    <p class="empty-note">No recommendations available right now.</p>
+{% endif %}
+
+{% endblock %}
